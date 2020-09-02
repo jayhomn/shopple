@@ -1,6 +1,7 @@
 const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
+const async = require("async");
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
@@ -9,8 +10,15 @@ const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 // time.
 const TOKEN_PATH = "token.json";
 
+// Initialize array from json
+let companyList = [];
+fs.readFile("./scripts/company_list.json", (err, content) => {
+  if (err) return console.log("Error reading companies:", err);
+  companyList = JSON.parse(content);
+});
+
 // Load client secrets from a local file.
-fs.readFile("../credentials.json", (err, content) => {
+fs.readFile("./credentials.json", (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
   // Authorize a client with credentials, then call the Gmail API.
   authorize(JSON.parse(content), addNewSale);
@@ -109,23 +117,37 @@ function addNewSale(auth) {
         const request = gmail.users.messages.get(
           { userId: "me", id: message.id },
           (err, res) => {
-            for (header of res.data.payload.headers) {
-              if (header.name === "Subject") {
-                let parsedString = header.value.split(" ");
-                let discountString = "";
-                for (string of parsedString) {
-                  if (string.includes("%")) {
-                    discountString = string;
-                    break;
+            async.each(
+              res.data.payload.headers,
+              function (header, callback) {
+                if (header.name === "Subject") {
+                  let parsedString = header.value.split(" ");
+                  let discountString = "";
+                  for (string of parsedString) {
+                    if (string.includes("%")) {
+                      discountString = string;
+                      break;
+                    }
+                  }
+                } else if (header.name === "From") {
+                  let email = header.value.split("<");
+                  email = email[1].substring(0, email[1].length - 1);
+                  if (!companyList.includes(email)) {
+                    companyList.push(email);
                   }
                 }
-                console.log(discountString);
-              } else if (header.name === "From") {
-                let email = header.value.split("<");
-                email = email[1].substring(0, email[1].length - 1);
-                console.log(email);
+                callback(null);
+              },
+              function (err) {
+                fs.writeFile(
+                  "./scripts/company_list.json",
+                  JSON.stringify(companyList),
+                  (err) => {
+                    if (err) throw err;
+                  }
+                );
               }
-            }
+            );
           }
         );
       }

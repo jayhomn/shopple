@@ -25,4 +25,4 @@ yarn-error.log*
 # environment variables
 .env
 credentials.json
-/scripts/token.json
+token.json
