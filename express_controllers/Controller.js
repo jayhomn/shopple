@@ -40,15 +40,13 @@ exports.saleListAll = async (req, res) => {
 
 //create sale
 exports.saleCreate = (req, res) => {
-  const amount = Number(req.body.amount);
+  const amount = req.body.amount;
   const description = req.body.description;
-  const endDate = Date.parse(req.body.endDate);
   const company = req.params.companyName;
 
   const newSale = {
     amount: amount,
     description: description,
-    endDate: endDate,
     company: company,
   };
 

@@ -7,16 +7,11 @@ const Schema = mongoose.Schema;
 const saleSchema = new Schema(
   {
     amount: {
-      type: Number,
-      required: false,
-      min: 0,
-    },
-    description: {
       type: String,
       required: true,
     },
-    endDate: {
-      type: Date,
+    description: {
+      type: String,
       required: true,
     },
     company: {

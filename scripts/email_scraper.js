@@ -2,6 +2,7 @@ const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
 const async = require("async");
+const { default: Axios } = require("axios");
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
@@ -11,8 +12,8 @@ const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 const TOKEN_PATH = "token.json";
 
 // Initialize array from json
-let companyList = [];
-fs.readFile("./scripts/company_list.json", (err, content) => {
+let companyList = {};
+fs.readFile("./company_list.json", (err, content) => {
   if (err) return console.log("Error reading companies:", err);
   companyList = JSON.parse(content);
 });
@@ -21,7 +22,7 @@ fs.readFile("./scripts/company_list.json", (err, content) => {
 fs.readFile("./credentials.json", (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
   // Authorize a client with credentials, then call the Gmail API.
-  authorize(JSON.parse(content), addNewSale);
+  authorize(JSON.parse(content), initialPopulateDB);
 });
 
 /**
@@ -103,17 +104,41 @@ function listLabels(auth) {
   );
 }
 
+function createCompany(email, name, sales) {
+  Axios.post("http://localhost:4000/companies", {
+    companyEmail: email,
+    companyName: name,
+    sales: sales,
+  }).then((error) => {
+    console.log(error);
+  });
+}
+
+function createSale(company, discount, description) {
+  Axios.post(`http://localhost:4000/companies/${company}/sales`, {
+    amount: discount,
+    companyName: company,
+    description: description,
+  }).then((error) => {
+    console.log(error);
+  });
+}
+
 /*
- * Composite function passed in as a callback after authorization to read the latest email and parse it for data to add to mongodb
+ * function passed in as a callback after authorization to read the latest email and parse it for data to add to mongodb
  */
-function addNewSale(auth) {
+function initialPopulateDB(auth) {
   const gmail = google.gmail({ version: "v1", auth });
+
+  // List all emails
   gmail.users.messages.list(
     {
       userId: "me",
     },
     (err, res) => {
       for (message of res.data.messages) {
+        let email = "";
+        let discountString = "";
         const request = gmail.users.messages.get(
           { userId: "me", id: message.id },
           (err, res) => {
@@ -121,26 +146,37 @@ function addNewSale(auth) {
               res.data.payload.headers,
               function (header, callback) {
                 if (header.name === "Subject") {
+                  // Parses Subject line
                   let parsedString = header.value.split(" ");
-                  let discountString = "";
                   for (string of parsedString) {
+                    // Identifies subject line with "%" and sets that as the amount discounted
                     if (string.includes("%")) {
                       discountString = string;
                       break;
                     }
                   }
                 } else if (header.name === "From") {
-                  let email = header.value.split("<");
+                  // Parses sender email and extracts just the email string into a json array
+                  email = header.value.split("<");
                   email = email[1].substring(0, email[1].length - 1);
-                  if (!companyList.includes(email)) {
-                    companyList.push(email);
-                  }
                 }
                 callback(null);
               },
               function (err) {
+                // This runs after the entire list is iterated
+
+                if (email != "" && discountString != "") {
+                  if (!companyList.hasOwnProperty(email)) {
+                    companyList[email] = "";
+                  } else {
+                    createCompany(email, companyList[email], []);
+                    createSale(companyList[email], discountString, "test");
+                  }
+                }
+
+                // Writes company List to company_list.json
                 fs.writeFile(
-                  "./scripts/company_list.json",
+                  "./company_list.json",
                   JSON.stringify(companyList),
                   (err) => {
                     if (err) throw err;
