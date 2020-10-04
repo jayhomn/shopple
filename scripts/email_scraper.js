@@ -22,7 +22,7 @@ fs.readFile("./company_list.json", (err, content) => {
 fs.readFile("./credentials.json", (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
   // Authorize a client with credentials, then call the Gmail API.
-  authorize(JSON.parse(content), initialPopulateDB);
+  authorize(JSON.parse(content), addNewSale);
 });
 
 /**
@@ -125,9 +125,9 @@ function createSale(company, discount, description) {
 }
 
 /*
- * function passed in as a callback after authorization to read the latest email and parse it for data to add to mongodb
+ * function passed in as a callback after authorization to add new sales to db and delete parsed emails
  */
-function initialPopulateDB(auth) {
+function addNewSale(auth) {
   const gmail = google.gmail({ version: "v1", auth });
 
   // List all emails
