@@ -40,13 +40,15 @@ exports.saleListAll = async (req, res) => {
 
 //create sale
 exports.saleCreate = (req, res) => {
-  const amount = req.body.amount;
+  const amount = Number(req.body.amount);
   const description = req.body.description;
+  const endDate = Date.parse(req.body.endDate);
   const company = req.params.companyName;
 
   const newSale = {
     amount: amount,
     description: description,
+    endDate: endDate,
     company: company,
   };
 
@@ -61,3 +63,19 @@ exports.saleCreate = (req, res) => {
     .then((company) => res.json(company))
     .catch((error) => res.json(error));
 };
+
+//delete sale by id
+//note: responses aren't working properly but the request works as it should
+exports.saleDelete = async (req, res) => {
+
+
+  CompanyModel.findOneAndUpdate(
+    { companyName: req.params.companyName },
+    { $pull: { sales: req.params.saleID } },
+    { returnNewDocument: true, maxTimeMS: 10000 })
+    .catch((err) => res.json(err))
+
+  SaleModel.deleteOne({ _id: req.params.saleID })
+    .then((sale) => res.json("Number of deleted items: " + sale.deletedCount))
+    .catch((err) => res.json(err))
+}
