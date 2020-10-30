@@ -52,7 +52,9 @@ exports.saleCreate = async (req, res) => {
     company: company,
   };
 
+  //check if company data exists in DB from companyName in request parameter
   if (await CompanyModel.exists({ companyName: company }) == true) {
+    //if the company data does exist, proceed to add sale into db
     SaleModel.create(newSale)
       .then((sale) =>
         CompanyModel.findOneAndUpdate(
@@ -75,13 +77,14 @@ exports.saleCreate = async (req, res) => {
 //note: responses aren't working properly but the request works as it should
 exports.saleDelete = async (req, res) => {
 
-
+  //find company by name and update the array containing the sale IDs (remove the sale id of the sale we want to delete)
   CompanyModel.findOneAndUpdate(
     { companyName: req.params.companyName },
     { $pull: { sales: req.params.saleID } },
-    { returnNewDocument: true, maxTimeMS: 10000 })
+    { returnNewDocument: true, maxTimeMS: 15000 })
     .catch((err) => res.status(400).json(err))
 
+  //delete the sale data of the sale we wanna delete
   SaleModel.deleteOne({ _id: req.params.saleID })
     .then((sale) => res.json("Number of deleted items: " + sale.deletedCount))
     .catch((err) => res.status(400).json(err))
