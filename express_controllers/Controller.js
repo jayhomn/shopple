@@ -39,7 +39,7 @@ exports.saleListAll = async (req, res) => {
 };
 
 //create sale
-exports.saleCreate = (req, res) => {
+exports.saleCreate = async (req, res) => {
   const amount = Number(req.body.amount);
   const description = req.body.description;
   const endDate = Date.parse(req.body.endDate);
@@ -52,16 +52,23 @@ exports.saleCreate = (req, res) => {
     company: company,
   };
 
-  SaleModel.create(newSale)
-    .then((sale) =>
-      CompanyModel.findOneAndUpdate(
-        { companyName: company },
-        { $push: { sales: sale._id } },
-        { new: true }
+  if (await CompanyModel.exists({ companyName: company }) == true) {
+    SaleModel.create(newSale)
+      .then((sale) =>
+        CompanyModel.findOneAndUpdate(
+          { companyName: company },
+          { $push: { sales: sale._id } },
+          { new: true }
+        )
       )
-    )
-    .then((company) => res.json(company))
-    .catch((error) => res.json(error));
+      .then((company) => res.json(company))
+      .catch((error) => res.status(400).json(error));
+  }
+  else {
+    res.status(400).json("Company does not exist")
+  }
+
+
 };
 
 //delete sale by id
@@ -73,9 +80,9 @@ exports.saleDelete = async (req, res) => {
     { companyName: req.params.companyName },
     { $pull: { sales: req.params.saleID } },
     { returnNewDocument: true, maxTimeMS: 10000 })
-    .catch((err) => res.json(err))
+    .catch((err) => res.status(400).json(err))
 
   SaleModel.deleteOne({ _id: req.params.saleID })
     .then((sale) => res.json("Number of deleted items: " + sale.deletedCount))
-    .catch((err) => res.json(err))
+    .catch((err) => res.status(400).json(err))
 }
