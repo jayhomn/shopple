@@ -38,6 +38,8 @@ const router = require("./routes/router.js");
 //use routes in router at home url
 app.use("/", router);
 
+app.use(express.static("./public"));
+
 //listen on specified port, and console log port number
 app.listen(PORT, function () {
   console.log("Server is running on Port: " + PORT);
