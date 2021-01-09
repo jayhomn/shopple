@@ -15,10 +15,6 @@ const saleSchema = new Schema(
       type: String,
       required: true,
     },
-    endDate: {
-      type: Date,
-      required: true,
-    },
     company: {
       type: String,
       required: true,
