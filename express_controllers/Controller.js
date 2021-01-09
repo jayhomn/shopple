@@ -65,7 +65,7 @@ exports.saleCreate = async (req, res) => {
       .catch((error) => res.status(400).json(error));
   }
   else {
-    res.status(400).json("Company does not exist")
+    res.status(404).json("Company does not exist")
   }
 
 
