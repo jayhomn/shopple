@@ -1,0 +1,35 @@
+.app {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.app-parent {
+  text-align: center;
+  background-color: #fbfbfb;
+}
+
+.space-left {
+  width: 32px;
+}
+
+.space-right {
+  width: 77.16px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fbfbfb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(230, 230, 230);
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(218, 218, 218);
+}
