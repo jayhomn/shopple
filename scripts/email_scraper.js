@@ -3,9 +3,10 @@ const readline = require("readline");
 const { google } = require("googleapis");
 const async = require("async");
 const { default: Axios } = require("axios");
+const e = require("cors");
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/gmail.modify"];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
 // time.
@@ -109,19 +110,19 @@ function createCompany(email, name, sales) {
     companyEmail: email,
     companyName: name,
     sales: sales,
-  }).then((error) => {
-    console.log(error);
-  });
+  })
+    .then((error) => {})
+    .catch((error) => {});
 }
 
-function createSale(company, discount, description) {
+function createSale(company, discount, descrip) {
   Axios.post(`http://localhost:4000/companies/${company}/sales`, {
     amount: discount,
     companyName: company,
-    description: description,
-  }).then((error) => {
-    console.log(error);
-  });
+    description: descrip,
+  })
+    .then((error) => {})
+    .catch((error) => {});
 }
 
 /*
@@ -130,15 +131,20 @@ function createSale(company, discount, description) {
 function addNewSale(auth) {
   const gmail = google.gmail({ version: "v1", auth });
 
+  let idsToDelete = [];
+
   // List all emails
   gmail.users.messages.list(
     {
       userId: "me",
     },
     (err, res) => {
-      for (message of res.data.messages) {
+      async.each(res.data.messages, function (message, callback) {
         let email = "";
         let discountString = "";
+        let description = "";
+        let dateRecieved;
+
         const request = gmail.users.messages.get(
           { userId: "me", id: message.id },
           (err, res) => {
@@ -151,7 +157,10 @@ function addNewSale(auth) {
                   for (string of parsedString) {
                     // Identifies subject line with "%" and sets that as the amount discounted
                     if (string.includes("%")) {
-                      discountString = string;
+                      description = header.value;
+                      // using regex to extract the numbers
+                      let numericalAmount = string.match(/\d*/);
+                      discountString = numericalAmount[0];
                       break;
                     }
                   }
@@ -159,34 +168,57 @@ function addNewSale(auth) {
                   // Parses sender email and extracts just the email string into a json array
                   email = header.value.split("<");
                   email = email[1].substring(0, email[1].length - 1);
+                } else if (header.name === "X-Received") {
+                  // Parses recieved date
+                  let recievedString = header.value.split(";");
+                  dateRecieved = new Date(recievedString[1].trim());
                 }
                 callback(null);
               },
               function (err) {
-                // This runs after the entire list is iterated
-
+                // Runs after every header is parsed
                 if (email != "" && discountString != "") {
                   if (!companyList.hasOwnProperty(email)) {
                     companyList[email] = "";
                   } else {
-                    createCompany(email, companyList[email], []);
-                    createSale(companyList[email], discountString, "test");
+                    let yesterdayMidnight = new Date();
+                    yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
+                    yesterdayMidnight.setHours(0, 0, 0);
+                    // if recieved date is greater than today at midnight add it
+                    if (dateRecieved >= yesterdayMidnight) {
+                      createSale(
+                        companyList[email],
+                        discountString,
+                        description
+                      );
+                    } else {
+                      gmail.users.messages.trash({
+                        id: message.id,
+                        userId: "me",
+                      });
+                    }
+                    // createCompany(email, companyList[email], []);
                   }
+                } else {
+                  gmail.users.messages.trash({
+                    userId: "me",
+                    id: message.id,
+                  });
                 }
 
-                // Writes company List to company_list.json
-                fs.writeFile(
-                  "./company_list.json",
-                  JSON.stringify(companyList),
-                  (err) => {
-                    if (err) throw err;
-                  }
-                );
+                // // Writes company List to company_list.json
+                // fs.writeFile(
+                //   "./company_list.json",
+                //   JSON.stringify(companyList),
+                //   (err) => {
+                //     if (err) throw err;
+                //   }
+                // );
               }
             );
           }
         );
-      }
+      });
     }
   );
 }
