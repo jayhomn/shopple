@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 4000;
 //Express middleware
 app.use(cors());
 app.use(express.json()); //Allow passing of json files
-
+app.use(express.static(path.join(__dirname, "client/build")));
 //uri stored in .env
 const uri = process.env.ATLAS_URI;
 
