@@ -106,7 +106,7 @@ function listLabels(auth) {
 }
 
 function createCompany(email, name, sales) {
-  Axios.post("http://localhost:4000/companies", {
+  Axios.post("https://shopple.herokuapp.com/companies", {
     companyEmail: email,
     companyName: name,
     sales: sales,
@@ -116,7 +116,7 @@ function createCompany(email, name, sales) {
 }
 
 function createSale(company, discount, descrip) {
-  Axios.post(`http://localhost:4000/companies/${company}/sales`, {
+  Axios.post(`https://shopple.herokuapp.com/companies/${company}/sales`, {
     amount: discount,
     companyName: company,
     description: descrip,
@@ -150,7 +150,7 @@ async function addNewSale(auth) {
     });
 
     // Goes through each message header
-    for (header in request.data.payload.headers) {
+    for (header of request.data.payload.headers) {
       if (header.name === "Subject") {
         // Parses Subject line
         let parsedString = header.value.split(" ");
@@ -181,19 +181,20 @@ async function addNewSale(auth) {
         companyList[email] = "";
       } else {
         let yesterdayMidnight = new Date();
-        yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
+        yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 10);
         yesterdayMidnight.setHours(0, 0, 0);
+        console.log(yesterdayMidnight);
         // if recieved date is greater than today at midnight add it: else add to delete list
         if (dateRecieved >= yesterdayMidnight) {
           createSale(companyList[email], discountString, description);
         } else {
-          idsToDelete.push(message.id);
+          // idsToDelete.push(message.id);
         }
         // createCompany(email, companyList[email], []);
       }
     } else {
       // Add to delete list if not
-      idsToDelete.push(message.id);
+      // idsToDelete.push(message.id);
     }
   }
 

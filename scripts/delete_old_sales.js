@@ -1,6 +1,6 @@
 const { default: Axios } = require("axios");
 
-Axios.get(`http://localhost:4000/sales`).then((res) => {
+Axios.get(`https://shopple.herokuapp.com/sales`).then((res) => {
   for (sale of res.data) {
     let dateCreated = new Date(sale.createdAt);
     let dateLimit = new Date();
@@ -8,7 +8,7 @@ Axios.get(`http://localhost:4000/sales`).then((res) => {
 
     if (dateCreated <= dateLimit) {
       Axios.delete(
-        `http://localhost:4000/companies/${sale.company}/sales/${sale._id}`
+        `https://shopple.herokuapp.com/companies/${sale.company}/sales/${sale._id}`
       );
     }
   }
