@@ -128,97 +128,80 @@ function createSale(company, discount, descrip) {
 /*
  * function passed in as a callback after authorization to add new sales to db and delete parsed emails
  */
-function addNewSale(auth) {
+async function addNewSale(auth) {
   const gmail = google.gmail({ version: "v1", auth });
 
   let idsToDelete = [];
 
   // List all emails
-  gmail.users.messages.list(
-    {
+  const list = await gmail.users.messages.list({
+    userId: "me",
+  });
+
+  // Goes through each messages
+  for (message of list.data.messages) {
+    let email = "";
+    let discountString = "";
+    let description = "";
+    let dateRecieved;
+    const request = await gmail.users.messages.get({
       userId: "me",
-    },
-    (err, res) => {
-      async.each(res.data.messages, function (message, callback) {
-        let email = "";
-        let discountString = "";
-        let description = "";
-        let dateRecieved;
+      id: message.id,
+    });
 
-        const request = gmail.users.messages.get(
-          { userId: "me", id: message.id },
-          (err, res) => {
-            async.each(
-              res.data.payload.headers,
-              function (header, callback) {
-                if (header.name === "Subject") {
-                  // Parses Subject line
-                  let parsedString = header.value.split(" ");
-                  for (string of parsedString) {
-                    // Identifies subject line with "%" and sets that as the amount discounted
-                    if (string.includes("%")) {
-                      description = header.value;
-                      // using regex to extract the numbers
-                      let numericalAmount = string.match(/\d*/);
-                      discountString = numericalAmount[0];
-                      break;
-                    }
-                  }
-                } else if (header.name === "From") {
-                  // Parses sender email and extracts just the email string into a json array
-                  email = header.value.split("<");
-                  email = email[1].substring(0, email[1].length - 1);
-                } else if (header.name === "X-Received") {
-                  // Parses recieved date
-                  let recievedString = header.value.split(";");
-                  dateRecieved = new Date(recievedString[1].trim());
-                }
-                callback(null);
-              },
-              function (err) {
-                // Runs after every header is parsed
-                if (email != "" && discountString != "") {
-                  if (!companyList.hasOwnProperty(email)) {
-                    companyList[email] = "";
-                  } else {
-                    let yesterdayMidnight = new Date();
-                    yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
-                    yesterdayMidnight.setHours(0, 0, 0);
-                    // if recieved date is greater than today at midnight add it
-                    if (dateRecieved >= yesterdayMidnight) {
-                      createSale(
-                        companyList[email],
-                        discountString,
-                        description
-                      );
-                    } else {
-                      gmail.users.messages.trash({
-                        id: message.id,
-                        userId: "me",
-                      });
-                    }
-                    // createCompany(email, companyList[email], []);
-                  }
-                } else {
-                  gmail.users.messages.trash({
-                    userId: "me",
-                    id: message.id,
-                  });
-                }
-
-                // // Writes company List to company_list.json
-                // fs.writeFile(
-                //   "./company_list.json",
-                //   JSON.stringify(companyList),
-                //   (err) => {
-                //     if (err) throw err;
-                //   }
-                // );
-              }
-            );
+    // Goes through each message header
+    for (header in request.data.payload.headers) {
+      if (header.name === "Subject") {
+        // Parses Subject line
+        let parsedString = header.value.split(" ");
+        for (string of parsedString) {
+          // Identifies subject line with "%" and sets that as the amount discounted
+          if (string.includes("%")) {
+            description = header.value;
+            // using regex to extract the numbers
+            let numericalAmount = string.match(/\d*/);
+            discountString = numericalAmount[0];
+            break;
           }
-        );
-      });
+        }
+      } else if (header.name === "From") {
+        // Parses sender email and extracts just the email string into a json array
+        email = header.value.split("<");
+        email = email[1].substring(0, email[1].length - 1);
+      } else if (header.name === "X-Received") {
+        // Parses recieved date
+        let recievedString = header.value.split(";");
+        dateRecieved = new Date(recievedString[1].trim());
+      }
     }
-  );
+
+    // Checks if email and discountString are sensible
+    if (email != "" && discountString != "") {
+      if (!companyList.hasOwnProperty(email)) {
+        companyList[email] = "";
+      } else {
+        let yesterdayMidnight = new Date();
+        yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
+        yesterdayMidnight.setHours(0, 0, 0);
+        // if recieved date is greater than today at midnight add it: else add to delete list
+        if (dateRecieved >= yesterdayMidnight) {
+          createSale(companyList[email], discountString, description);
+        } else {
+          idsToDelete.push(message.id);
+        }
+        // createCompany(email, companyList[email], []);
+      }
+    } else {
+      // Add to delete list if not
+      idsToDelete.push(message.id);
+    }
+  }
+
+  // Trashes messages
+  for (id of idsToDelete) {
+    await gmail.users.messages.trash({
+      id: id,
+      userId: "me",
+    });
+  }
 }
