@@ -17,11 +17,15 @@ app.use(express.json()); //Allow passing of json files
 const uri = process.env.ATLAS_URI;
 
 //connect with uri
-mongoose.connect(process.env.MONGODB, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(process.env.MONGODB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const connection = mongoose.connection;
 
