@@ -8,8 +8,9 @@ const saleSchema = new Schema(
   {
     amount: {
       type: Number,
-      required: false,
-      min: 0,
+      required: true,
+      min: 1,
+      max: 99,
     },
     description: {
       type: String,
