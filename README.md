@@ -6,6 +6,8 @@ Shopple is a web application that aggregates sale data from various companies an
 
 Built with MERN stack.
 
+You can access the app here: https://shopple.herokuapp.com/
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
