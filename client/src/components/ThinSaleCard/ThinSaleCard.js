@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     height: "100%",
     marginRight: 0,
     backgroundRepeat: "none",
-    backgroundSize: "contain",
+    backgroundSize: "contain"
   },
   saleDescript: {
     display: "block",
@@ -66,7 +66,7 @@ function ThinSaleCard(props) {
           align="left"
           className={classes.companyName}
         >
-          {props.companyName.replaceAll("_", " ")}
+          {props.companyName.replaceAll('_', ' ')}
         </Typography>
         <Typography
           className={classes.saleDescript}

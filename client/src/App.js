@@ -10,6 +10,8 @@ import NormalSaleCard from "./components/NormalSaleCard/NormalSaleCard";
 import ThinSaleCard from "./components/ThinSaleCard/ThinSaleCard";
 import Axios from "axios";
 
+
+
 /* Main component that renders the app */
 
 function App(props) {
@@ -38,7 +40,7 @@ function App(props) {
   //Refresh App component
   const updateFunction = () => {
     updateState((x) => x + 1);
-  };
+  }
 
   //update input sale list based on search substring (callback for AppBar.js)
   const updateSaleList = (substring) => {
@@ -48,16 +50,13 @@ function App(props) {
     let tempSaleList = [];
 
     for (let sale of saleList) {
-      if (
-        sale.company.toLowerCase().includes(substring.toLowerCase()) ||
-        sale.description.toLowerCase().includes(substring.toLowerCase())
-      ) {
+      if (sale.company.toLowerCase().includes(substring.toLowerCase()) || sale.description.toLowerCase().includes(substring.toLowerCase())) {
         tempSaleList.push(sale);
       }
     }
     console.log(tempSaleList);
     setInputList(tempSaleList);
-  };
+  }
 
   return (
     <>
@@ -68,22 +67,14 @@ function App(props) {
           <div className="space-left" />
           {!showListView && (
             <Fade in={!showListView} timeout={500}>
-              <SaleCardContainer
-                sales={inputList}
-                key="NormalView"
-                search={search}
-              >
+              <SaleCardContainer sales={inputList} key="NormalView" search={search}>
                 <NormalSaleCard />
               </SaleCardContainer>
             </Fade>
           )}
           {showListView && (
             <Fade in={showListView} timeout={500}>
-              <SaleCardContainer
-                sales={inputList}
-                key="ThinView"
-                search={search}
-              >
+              <SaleCardContainer sales={inputList} key="ThinView" search={search}>
                 <ThinSaleCard />
               </SaleCardContainer>
             </Fade>
