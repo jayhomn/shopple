@@ -50,13 +50,13 @@ function NormalSaleCard(props) {
   const serverURL = process.env.REACT_APP_BACKEND_URL || process.env.PUBLIC_URL;
 
   let saleAmountColour = {
-    color: "#d50000",
+    color: "#8f1414",
   };
   if (props.saleAmount < 60) {
     saleAmountColour.color = "#b8860b";
   }
   if (props.saleAmount < 25) {
-    saleAmountColour.color = "#4b7b4b";
+    saleAmountColour.color = "#6e6650";
   }
 
   return (
