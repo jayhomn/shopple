@@ -9,9 +9,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import TextField from "@material-ui/core/TextField";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Axios from "axios";
 
 // This component is the floating action button in charge of the add sale functionality.
@@ -85,37 +85,30 @@ function AddSale(props) {
 
   //handle sale data entry
   const handleEnterSale = () => {
-    Axios.post(
-      process.env.PUBLIC_URL +
-        "/companies/" +
-        companyNameState.replaceAll(" ", "_") +
-        "/sales",
-      {
-        amount: parseInt(saleAmountState),
-        description: saleDescriptionState,
-      }
-    )
+    Axios.post(process.env.PUBLIC_URL + "/companies/" + companyNameState.replaceAll(' ', '_') + "/sales", {
+      amount: parseInt(saleAmountState),
+      description: saleDescriptionState
+    })
       .then((res) => {
-        console.log(res);
+        console.log(res)
         //Open success snackbar
         setSuccessState(true);
         //Close Dialog
         handleDialogClose();
         //Update App.js
         props.updateFunction();
+
       })
       .catch((err) => {
         console.log(err.response);
 
-        if (
-          err.response.data === "Company does not exist" ||
-          err.response.status === 404
-        ) {
+        if (err.response.data === "Company does not exist" || err.response.status === 404) {
           //Open failure snackbar
           setFailState(true);
           //Update App.js
           props.updateFunction();
-        } else {
+        }
+        else {
           //Set error message
           setErrorMessage(err.response.data._message);
           //Open error snackbar
@@ -129,30 +122,30 @@ function AddSale(props) {
   //handle data entries
   const onChangeCompanyName = (e) => {
     setCompanyNameState(e.target.value);
-  };
+  }
 
   const onChangeSaleDescription = (e) => {
     setSaleDescriptionState(e.target.value);
-  };
+  }
 
   const onChangeSaleAmount = (e) => {
     setSaleAmountState(parseInt(e.target.value));
-  };
+  }
 
   //handle success snackbar close
   const handleCloseSuccessSnackbar = () => {
     setSuccessState(false);
-  };
+  }
 
   //handle success snackbar close
   const handleCloseFailSnackbar = () => {
     setFailState(false);
-  };
+  }
 
   //handle success snackbar close
   const handleCloseErrorSnackbar = () => {
     setErrorState(false);
-  };
+  }
 
   return (
     <>
@@ -176,17 +169,8 @@ function AddSale(props) {
             here!
           </DialogContentText>
           <form className={classes.form}>
-            <FormTextField
-              label="Company Name"
-              onChange={onChangeCompanyName}
-              helperText="Required"
-            />
-            <FormTextField
-              label="Sale Description"
-              onChange={onChangeSaleDescription}
-              helperText="Required"
-              multiline
-            />
+            <FormTextField label="Company Name" onChange={onChangeCompanyName} helperText="Required" />
+            <FormTextField label="Sale Description" onChange={onChangeSaleDescription} helperText="Required" multiline />
             <FormTextField
               label="Sale Amount"
               type="number"
@@ -195,9 +179,7 @@ function AddSale(props) {
                   max: 100,
                   min: 0,
                 },
-                startAdornment: (
-                  <InputAdornment position="start">%</InputAdornment>
-                ),
+                startAdornment: <InputAdornment position="start">%</InputAdornment>,
               }}
               onChange={onChangeSaleAmount}
               helperText="Required"
@@ -213,46 +195,18 @@ function AddSale(props) {
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={successState}
-        autoHideDuration={10000}
-        onClose={handleCloseSuccessSnackbar}
-      >
-        <MuiAlert
-          onClose={handleCloseSuccessSnackbar}
-          severity="success"
-          elevation={6}
-          variant="filled"
-        >
+      <Snackbar open={successState} autoHideDuration={10000} onClose={handleCloseSuccessSnackbar}>
+        <MuiAlert onClose={handleCloseSuccessSnackbar} severity="success" elevation={6} variant="filled">
           Successfully added the sale for {companyNameState}!
         </MuiAlert>
       </Snackbar>
-      <Snackbar
-        open={failState}
-        autoHideDuration={10000}
-        onClose={handleCloseFailSnackbar}
-      >
-        <MuiAlert
-          onClose={handleCloseFailSnackbar}
-          severity="warning"
-          elevation={6}
-          variant="filled"
-        >
-          Failed to add "{companyNameState}", as it is currently not supported
-          by our servers :(
+      <Snackbar open={failState} autoHideDuration={10000} onClose={handleCloseFailSnackbar}>
+        <MuiAlert onClose={handleCloseFailSnackbar} severity="warning" elevation={6} variant="filled">
+          Failed to add "{companyNameState}", as it is currently not supported by our servers :(
         </MuiAlert>
       </Snackbar>
-      <Snackbar
-        open={errorState}
-        autoHideDuration={10000}
-        onClose={handleCloseErrorSnackbar}
-      >
-        <MuiAlert
-          onClose={handleCloseErrorSnackbar}
-          severity="error"
-          elevation={6}
-          variant="filled"
-        >
+      <Snackbar open={errorState} autoHideDuration={10000} onClose={handleCloseErrorSnackbar}>
+        <MuiAlert onClose={handleCloseErrorSnackbar} severity="error" elevation={6} variant="filled">
           Error: {errorMessage}
         </MuiAlert>
       </Snackbar>

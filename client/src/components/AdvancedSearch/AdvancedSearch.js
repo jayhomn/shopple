@@ -164,17 +164,11 @@ function AdvancedSearch(props) {
             onChange={handleChangeSortType}
           >
             <MenuItem value={"Recently Added"}>Recently Added</MenuItem>
-            <MenuItem value={"Rating - High to Low"}>
-              Rating - High to Low
+            <MenuItem value={"Discount - High to Low"}>
+              Discount - High to Low
             </MenuItem>
-            <MenuItem value={"Rating - Low to High"}>
-              Rating - Low to High
-            </MenuItem>
-            <MenuItem value={"Price - High to Low"}>
-              Price - High to Low
-            </MenuItem>
-            <MenuItem value={"Price - Low to High"}>
-              Price - Low to High
+            <MenuItem value={"Discount - Low to High"}>
+              Discount - Low to High
             </MenuItem>
           </Select>
         </FormControl>

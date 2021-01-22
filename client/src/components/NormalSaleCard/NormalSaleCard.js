@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   saleAmount: {
     fontSize: 22,
     position: "absolute",
-    bottom: 4,
+    bottom: 4
   },
 });
 
@@ -61,7 +61,7 @@ function NormalSaleCard(props) {
           align="left"
           gutterBottom
         >
-          {props.companyName.replaceAll("_", " ")}
+          {props.companyName.replaceAll('_', ' ')}
         </Typography>
         <Typography
           variant="body2"
@@ -71,13 +71,7 @@ function NormalSaleCard(props) {
         >
           {props.saleDescript}
         </Typography>
-        <Typography
-          variant="body2"
-          color="Secondary"
-          align="left"
-          className={classes.saleAmount}
-          gutterBottom
-        >
+        <Typography variant="body2" color="Secondary" align="left" className={classes.saleAmount} gutterBottom>
           Up to {props.saleAmount}% off
         </Typography>
       </div>
