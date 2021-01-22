@@ -36,6 +36,8 @@ const FormTextField = styled(TextField)({
 function AddSale(props) {
   const classes = styles();
 
+  const serverURL = process.env.REACT_APP_BACKEND_URL || process.env.PUBLIC_URL;
+
   //useState hook for the dialog box state.
   //expected state is a boolean
   const [dialogState, setDialogState] = React.useState(false);
@@ -85,7 +87,7 @@ function AddSale(props) {
 
   //handle sale data entry
   const handleEnterSale = () => {
-    Axios.post(process.env.PUBLIC_URL + "/companies/" + companyNameState.replaceAll(' ', '_') + "/sales", {
+    Axios.post(serverURL + "/companies/" + companyNameState.replaceAll(' ', '_') + "/sales", {
       amount: parseInt(saleAmountState),
       description: saleDescriptionState
     })

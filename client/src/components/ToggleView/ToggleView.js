@@ -22,7 +22,7 @@ class ToggleView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      listView: true,
+      listView: false,
     };
   }
 
@@ -38,7 +38,7 @@ class ToggleView extends React.Component {
     }));
   };
 
-  /* Developer's Notes - Kevin Peng
+  /* Developer's Notes - Kevin Peng 2020/06/01
     I previously wrote the callback without any parameters, and used the listView state as the input for parentCallback.
     It was intended so that passState would be called after the setState function. The idea was that:
     onChange -> setState to correct state -> callback to parent

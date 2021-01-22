@@ -14,8 +14,6 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json()); //Allow passing of json files
 app.use(express.static(path.join(__dirname, "client/build")));
-//uri stored in .env
-const uri = process.env.ATLAS_URI;
 
 //connect with uri
 mongoose
@@ -25,7 +23,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .catch((err) => {
-    console.log(err);
+    console.log(err.response);
   });
 
 const connection = mongoose.connection;

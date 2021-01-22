@@ -36,12 +36,13 @@ const useStyles = makeStyles({
   },
 });
 
-
 /* Scrollable container used to contain normal sale cards and thin sale cards */
 
 function SaleCardContainer(props) {
   const classes = useStyles();
+
   const sales = props.sales;
+
   const listItems = sales.map((sale) => (
     <React.Fragment key={sale._id}>
       {React.cloneElement(props.children, {
@@ -51,24 +52,37 @@ function SaleCardContainer(props) {
       })}
     </React.Fragment>
   ));
+
   return (
     <ul {...props} className={classes.root}>
       {listItems}
-      {(sales.length === 0) && (<Card className={classes.noSalesCard}>
-        <Typography className={classes.align_left}>
-          Your search of "{props.search}" did not match any sales we have catalogued.
-        </Typography>
-        <Typography className={classes.align_left}>
-          Suggestions:
-        </Typography>
-        <Typography className={classes.align_left}>
-          <ul>
-            <li>Make sure that all words are spelled correctly.</li>
-            <li>Try different keywords.</li>
-            <li>Try fewer keywords.</li>
-          </ul>
-        </Typography>
-      </Card>)}
+      {sales.length === 0 && (
+        <Card className={classes.noSalesCard}>
+          {props.search === "" && (
+            <Typography className={classes.align_left}>
+              There are currently no sales saved in our servers.
+            </Typography>
+          )}
+          {props.search !== "" && (
+            <>
+              <Typography className={classes.align_left}>
+                Your search of "{props.search}" did not match any sales we have
+                catalogued.
+              </Typography>
+              <Typography className={classes.align_left}>
+                Suggestions:
+              </Typography>
+              <Typography className={classes.align_left}>
+                <ul>
+                  <li>Make sure that all words are spelled correctly.</li>
+                  <li>Try different keywords.</li>
+                  <li>Try fewer keywords.</li>
+                </ul>
+              </Typography>
+            </>
+          )}
+        </Card>
+      )}
     </ul>
   );
 }

@@ -10,22 +10,27 @@ import NormalSaleCard from "./components/NormalSaleCard/NormalSaleCard";
 import ThinSaleCard from "./components/ThinSaleCard/ThinSaleCard";
 import Axios from "axios";
 
-
-
 /* Main component that renders the app */
 
 function App(props) {
-  const [showListView, setShowListView] = React.useState(true);
+  const [showListView, setShowListView] = React.useState(false);
   const [saleList, setSaleList] = React.useState([]);
   const [update, updateState] = React.useState(0);
   const [search, setSearch] = React.useState("");
   const [inputList, setInputList] = React.useState([]);
 
+  const serverURL = process.env.REACT_APP_BACKEND_URL || process.env.PUBLIC_URL;
+
   //useEffect to make get request to backend to retreive list of sales objects
   React.useEffect(() => {
-    Axios.get(process.env.PUBLIC_URL + "/sales").then((response) => {
-      setSaleList(response.data);
-    });
+    Axios.get(serverURL + "/sales")
+      .then((response) => {
+        setSaleList(response.data);
+      })
+      .catch((err) => {
+        setSaleList([]);
+        console.log(err);
+      });
   }, [update]);
 
   React.useEffect(() => {
@@ -40,7 +45,7 @@ function App(props) {
   //Refresh App component
   const updateFunction = () => {
     updateState((x) => x + 1);
-  }
+  };
 
   //update input sale list based on search substring (callback for AppBar.js)
   const updateSaleList = (substring) => {
@@ -50,13 +55,16 @@ function App(props) {
     let tempSaleList = [];
 
     for (let sale of saleList) {
-      if (sale.company.toLowerCase().includes(substring.toLowerCase()) || sale.description.toLowerCase().includes(substring.toLowerCase())) {
+      if (
+        sale.company.toLowerCase().includes(substring.toLowerCase()) ||
+        sale.description.toLowerCase().includes(substring.toLowerCase())
+      ) {
         tempSaleList.push(sale);
       }
     }
     console.log(tempSaleList);
     setInputList(tempSaleList);
-  }
+  };
 
   return (
     <>
@@ -67,14 +75,22 @@ function App(props) {
           <div className="space-left" />
           {!showListView && (
             <Fade in={!showListView} timeout={500}>
-              <SaleCardContainer sales={inputList} key="NormalView" search={search}>
+              <SaleCardContainer
+                sales={inputList}
+                key="NormalView"
+                search={search}
+              >
                 <NormalSaleCard />
               </SaleCardContainer>
             </Fade>
           )}
           {showListView && (
             <Fade in={showListView} timeout={500}>
-              <SaleCardContainer sales={inputList} key="ThinView" search={search}>
+              <SaleCardContainer
+                sales={inputList}
+                key="ThinView"
+                search={search}
+              >
                 <ThinSaleCard />
               </SaleCardContainer>
             </Fade>

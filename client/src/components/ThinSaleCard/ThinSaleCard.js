@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     height: "100%",
     marginRight: 0,
     backgroundRepeat: "none",
-    backgroundSize: "contain"
+    backgroundSize: "contain",
   },
   saleDescript: {
     display: "block",
@@ -53,11 +53,24 @@ const useStyles = makeStyles({
 
 function ThinSaleCard(props) {
   const classes = useStyles();
+
+  const serverURL = process.env.REACT_APP_BACKEND_URL || process.env.PUBLIC_URL;
+
+  let saleAmountColour = {
+    color: "#d50000",
+  };
+  if (props.saleAmount < 60) {
+    saleAmountColour.color = "#b8860b";
+  }
+  if (props.saleAmount < 25) {
+    saleAmountColour.color = "#4b7b4b";
+  }
+
   return (
     <Card className={classes.root}>
       <CardMedia
         className={classes.companyPic}
-        image={process.env.PUBLIC_URL + "/logos/" + props.companyName + ".svg"}
+        image={serverURL + "/logos/" + props.companyName + ".svg"}
         title={props.companyName}
       />
       <div className={classes.mainText}>
@@ -66,7 +79,7 @@ function ThinSaleCard(props) {
           align="left"
           className={classes.companyName}
         >
-          {props.companyName.replaceAll('_', ' ')}
+          {props.companyName.replaceAll("_", " ")}
         </Typography>
         <Typography
           className={classes.saleDescript}
@@ -84,6 +97,7 @@ function ThinSaleCard(props) {
         color="secondary"
         align="left"
         gutterBottom
+        style={saleAmountColour}
       >
         Up to {props.saleAmount}% off
       </Typography>

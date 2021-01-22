@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   saleAmount: {
     fontSize: 22,
     position: "absolute",
-    bottom: 4
+    bottom: 4,
   },
 });
 
@@ -46,11 +46,24 @@ const useStyles = makeStyles({
 
 function NormalSaleCard(props) {
   const classes = useStyles();
+
+  const serverURL = process.env.REACT_APP_BACKEND_URL || process.env.PUBLIC_URL;
+
+  let saleAmountColour = {
+    color: "#d50000",
+  };
+  if (props.saleAmount < 60) {
+    saleAmountColour.color = "#b8860b";
+  }
+  if (props.saleAmount < 25) {
+    saleAmountColour.color = "#4b7b4b";
+  }
+
   return (
     <Card className={classes.root}>
       <CardMedia
         className={classes.companyPic}
-        image={process.env.PUBLIC_URL + "/logos/" + props.companyName + ".svg"}
+        image={serverURL + "/logos/" + props.companyName + ".svg"}
         title={props.companyName}
       />
       <div>
@@ -61,7 +74,7 @@ function NormalSaleCard(props) {
           align="left"
           gutterBottom
         >
-          {props.companyName.replaceAll('_', ' ')}
+          {props.companyName.replaceAll("_", " ")}
         </Typography>
         <Typography
           variant="body2"
@@ -71,7 +84,14 @@ function NormalSaleCard(props) {
         >
           {props.saleDescript}
         </Typography>
-        <Typography variant="body2" color="Secondary" align="left" className={classes.saleAmount} gutterBottom>
+        <Typography
+          variant="body2"
+          color="Secondary"
+          align="left"
+          className={classes.saleAmount}
+          gutterBottom
+          style={saleAmountColour}
+        >
           Up to {props.saleAmount}% off
         </Typography>
       </div>
