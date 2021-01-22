@@ -181,7 +181,7 @@ async function addNewSale(auth) {
         companyList[email] = "";
       } else {
         let yesterdayMidnight = new Date();
-        yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 10);
+        yesterdayMidnight.setDate(yesterdayMidnight.getDate() - 1);
         yesterdayMidnight.setHours(0, 0, 0);
         console.log(yesterdayMidnight);
         // if recieved date is greater than today at midnight add it: else add to delete list
