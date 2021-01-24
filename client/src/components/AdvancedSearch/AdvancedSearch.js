@@ -48,7 +48,7 @@ const useStyles = makeStyles({
     overflowY: "auto",
     maxWidth: 200,
     width: "fit-content",
-    height: 300,
+    height: 250,
   },
   formControl: {
     margin: 8,
@@ -79,13 +79,10 @@ function AdvancedSearch(props) {
 
   //Hardcoded companyList for now, but later should be routed from backend as a list of supported companies
   const companyList = [
-    "A&F",
     "Adidas",
-    "Aritzia",
     "Banana Republic",
-    "Gap",
     "H&M",
-    "Hollister",
+    "Hudson's Bay",
     "Nike",
   ];
 
@@ -102,7 +99,7 @@ function AdvancedSearch(props) {
   //useState for company filter object... ex. {nike: true, adidas: false, ...}
   const [companyFilter, setCompanyFilter] = React.useState(companyObjectTrue);
 
-  //useState for sort type from selection dropdown... ex. 'Recent', 'Rating - High to Low, etc.
+  //useState for sort type from selection dropdown... ex. 'Recent', 'Amount - High to Low', etc.
   const [sortType, setSortType] = React.useState("Recently Added");
 
   //handle functions START
@@ -128,6 +125,15 @@ function AdvancedSearch(props) {
   const handleSelectNone = () => {
     setCompanyFilter(companyObjectFalse);
   };
+
+  //useEffect for when companyFilter array is updated
+  const updateFunction = props.filterUpdate
+  React.useEffect(
+    () => {
+      updateFunction(companyFilter);
+    },
+    [companyFilter, updateFunction]
+  );
 
   //Create JSX elements in a companyFilterList array to insert into the React return statement for the filter list part of the component
   const companyFilterList = companyList.map((company) => {
