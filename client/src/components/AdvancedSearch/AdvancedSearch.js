@@ -127,13 +127,16 @@ function AdvancedSearch(props) {
   };
 
   //useEffect for when companyFilter array is updated
-  const updateFunction = props.filterUpdate
-  React.useEffect(
-    () => {
-      updateFunction(companyFilter);
-    },
-    [companyFilter, updateFunction]
-  );
+  const updateFilterFunction = props.filterUpdate;
+  React.useEffect(() => {
+    updateFilterFunction(companyFilter);
+  }, [companyFilter, updateFilterFunction]);
+
+  //userEffect for when sortType is updated
+  const sortUpdateFunction = props.sortUpdate;
+  React.useEffect(() => {
+    sortUpdateFunction(sortType);
+  }, [sortType, sortUpdateFunction]);
 
   //Create JSX elements in a companyFilterList array to insert into the React return statement for the filter list part of the component
   const companyFilterList = companyList.map((company) => {
