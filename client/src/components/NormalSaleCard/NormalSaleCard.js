@@ -86,7 +86,7 @@ function NormalSaleCard(props) {
         </Typography>
         <Typography
           variant="body2"
-          color="Secondary"
+          color="secondary"
           align="left"
           className={classes.saleAmount}
           gutterBottom
