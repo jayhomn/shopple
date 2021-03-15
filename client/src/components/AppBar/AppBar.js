@@ -9,7 +9,7 @@ import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import logo from "../../images/shopple_icon.png";
-import kevinImage from "../../images/kevin.png";
+import kevinImage from "../../images/kevin.jpg";
 import jayImage from "../../images/jay.jpg";
 import { Link } from "@material-ui/core";
 
